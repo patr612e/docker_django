@@ -1,0 +1,40 @@
+{% extends 'bank_app/base.html' %}
+
+{% block content %}
+
+<a href="{% url 'bank_app:index' %}"></a>
+
+<h1>user: {{ user }}</h1>
+
+<br>
+
+<h1>Accounts:</h1>
+
+<div>
+	{% for account in accounts %}
+
+	<p> Account id: {{ account.id }} - {{ account.name }} - {{ account.balance }} $ </p>
+
+	{% endfor %}
+
+</div>
+
+<h2> Transactions: 📒</h2>
+
+{% for ledger in ledgers %}
+
+<div style="font-style: italic; margin: 10px 0">
+
+	{{ ledger.account }} -
+	{{ ledger.amount }} -
+	{{ ledger.text }} -
+	{{ ledger.timestamp }} -
+	{{ ledger.transaction_id }} -
+
+</div>
+
+{% endfor %}
+
+
+
+{% endblock %}

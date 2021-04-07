@@ -1,0 +1,125 @@
+{% extends "bank_app/base.html" %}
+
+{% block content %}
+
+{% if costumer.is_employee %}
+
+<p>Your rank: {{ costumer.rank }}</p>
+
+	<h3>Employee Zone ✍️</h3>	
+
+	<h2>Add user</h2>
+	<form action="{% url 'bank_app:add_user' %}" method="POST">
+		{% csrf_token %}
+             	<input type="text" name="username" placeholder="username">
+		<input type="text" name="firstname" placeholder="firstname">
+		<input type="text" name="lastname" placeholder="lastname">
+		<input type="text" name="password" placeholder="password">
+		<input type="text" name="email" placeholder="email">
+		{{ costumer_form }}
+		<button>Add User</button>
+	</form>
+
+
+	<h2>All users</h2>
+
+	<p>Add account: Insert account name</p>
+
+	{% for user in users %}
+
+	<h4>{{ user.username }}</h4>
+
+	<a href="{{ user.id }}">Account details</a>
+	
+	<form action="{% url 'bank_app:change_rank' %}" method="POST">
+		{% csrf_token %}
+		<div style="display: flex">
+			<input type="radio" id="gold" name="rank" value="Gold">
+			<label for="gold">Gold</label>
+			<input type="radio" id="silver" name="rank" value="Silver">
+			<label for="silver">Silver</label>
+			<input type="radio" id="basic" name="rank" value="Basic">
+			<label for="basic">Basic</label>
+			<button>Update</button>
+		</div>
+		<input type="hidden" name="pk" value="{{ user.pk }}">
+	</form>
+
+	<form action="{% url 'bank_app:add_account' %}" method="POST">
+		{% csrf_token %}
+		<input type="text" name="account" placeholder="account name">
+		<input type="hidden" name="pk" value="{{ user.pk }}">
+		<button>Add new</button>
+	</form>
+
+	<div style="margin:15px 0;"></div>
+
+	{% endfor %}
+
+
+{% endif %}
+
+<h3>User Zone 👨</h3> 
+
+<a href="{{ user.id }}" >My account details</a>
+
+
+<h2>My Loans </h2>
+
+{% for loan in loans %}
+
+<p>Loan id: {{loan.id}} - {{ loan.name }} // {{ loan.balance }} $</p>
+
+{% endfor %}
+
+
+<h2>My Accounts</h2>
+
+{% for account in accounts %}
+
+<p> Account id: {{account.id}} - {{ account.name }} // {{ account.balance }} $</p>
+
+{% endfor %}
+	
+
+{% if costumer.can_make_loans %}
+
+	<h2>Make a loan 📝</h2>
+
+	<form action="{% url 'bank_app:make_loan' %}" method="POST">
+		{% csrf_token %}
+		<input type="text" name="loan_name" placeholder="loan name">
+		
+		<label>My accounts:</label>
+		<select name="account_name" placeholder="My accounts">
+		{% for account in accounts %}
+		<option value="{{ account.id }}">{{ account.name }}</option>
+		{% endfor %}
+		</select>
+
+
+		<input type="text" name="text" placeholder="loan comment">
+		<input type="number" name="amount" placeholder="amount">
+		<button>Make loan</button>
+	</form>
+
+{% endif %}
+
+<h2>Transfer Money 💸💰</h2>
+
+<form action="{% url 'bank_app:transfer_money' %}" method="POST">
+	{% csrf_token %}
+	<label>My accounts:</label>
+	<select name="from_account" placeholder="My accounts">
+	{% for account in accounts %}
+	<option value="{{ account.id }}">{{ account.name }}</option>
+	{% endfor %}
+	</select>
+
+	<input type="text" name="to_account" placeholder="receiver account id" >
+	<input type="text" name="text" placeholder="transaction comment">
+	<input type="number" name="amount" placeholder="amount">
+	<button>Send</button>
+</form>
+
+{% endblock %}
