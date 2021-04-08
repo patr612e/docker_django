@@ -1,10 +1,12 @@
 version: '3.8'
 
 services:
-   web:
+   app:
        build: .
-       ports:
-           - 8000:8000
+       volumes:
+           - static:/static/
+       depends_on:
+           - db
 
    db:
        image: postgres:13-alpine
@@ -15,6 +17,17 @@ services:
           - POSTGRES_USER=postgres
           - POSTGRES_PASSWORD=postgres
 
+   nginx:
+       image: nginx:latest
+       ports:
+          - 8000:80
+       volumes:
+          - ./config/nginx/conf.d:/etc/nginx/conf.d
+          - static:/static/
+       depends_on:
+          - app
+
 volumes:
   postgres_data:
+  static:
          
